@@ -1,5 +1,3 @@
-DOCKER_COMPOSE      ?= docker compose
-DOCKER_COMPOSE_FILE ?= docker/docker-compose.yml
 PROJECT_NAME        ?= $(notdir $(CURDIR))
 ENV_FILE            ?= .env
 
@@ -20,17 +18,15 @@ else
 endif
 -include .make/$(MK_OS).mk
 
-.PHONY: help check-env setup run lint format test build package clean up
+.PHONY: help check-env setup run lint format test build clean
 .DEFAULT_GOAL := help
 
 help:        help-$(MK_OS)        	## Show available commands
 setup:       setup-$(MK_OS)       	## Install project dependencies
 run:         run-$(MK_OS)         	## Run the project locally
-lint:        lint-$(MK_OS)        	## Run lint checks
+lint:        lint-$(MK_OS)        	## Run lint checks and type checking
 format:      format-$(MK_OS)      	## Auto-format code
 test:        test-$(MK_OS)        	## Run tests
-build:       build-$(MK_OS)       	## Build the project
-package:     build package-$(MK_OS) ## Package the project for distribution (tarballs, docker images, etc.)
-clean:       clean-$(MK_OS)       	## Remove caches, containers, images, volumes
-up:          up-$(MK_OS)          	## Start project via Docker Compose
+build:       build-$(MK_OS)       	## Build and package the project
+clean:       clean-$(MK_OS)       	## Remove caches and build artifacts
 check-env:   check-env-$(MK_OS)

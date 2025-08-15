@@ -12,7 +12,6 @@ else
   SHELLFLAGS := -eu -c
 endif
 
-DOCKER_COMPOSE ?= $(shell command -v docker-compose 2>/dev/null || echo "docker compose")
 BOLD   := $(shell tput bold 2>/dev/null || echo "")
 RED    := $(shell tput setaf 1 2>/dev/null || echo "")
 GREEN  := $(shell tput setaf 2 2>/dev/null || echo "")
@@ -21,28 +20,45 @@ BLUE   := $(shell tput setaf 4 2>/dev/null || echo "")
 RESET  := $(shell tput sgr0 2>/dev/null || echo "")
 
 setup-debian:
-	@echo "$(YELLOW)No setup command defined for this project.$(RESET)"
+	@echo "$(GREEN)Setting up project dependencies...$(RESET)"
+	@echo "$(BLUE)Checking Node.js and npm installation...$(RESET)"
+	@if ! command -v node >/dev/null 2>&1; then \
+		echo "$(RED)ERROR: Node.js is not installed. Please install Node.js first.$(RESET)"; \
+		exit 1; \
+	fi
+	@if ! command -v npm >/dev/null 2>&1; then \
+		echo "$(RED)ERROR: npm is not installed. Please install npm first.$(RESET)"; \
+		exit 1; \
+	fi
+	@echo "$(GREEN)Node.js version: $(shell node --version)$(RESET)"
+	@echo "$(GREEN)npm version: $(shell npm --version)$(RESET)"
+	@echo "$(BLUE)Installing npm packages and configuring Husky...$(RESET)"
+	@cd app && npm install && npx husky init && npx husky add .husky/pre-commit "npx lint-staged"
+	@echo "$(GREEN)Setup completed successfully!$(RESET)"
 
 run-debian:
-	@echo "$(YELLOW)No run command defined for this project.$(RESET)"
+	@echo "$(GREEN)Starting development server...$(RESET)"
+	@cd app && npm run dev
 
 lint-debian:
-	@echo "$(YELLOW)No lint command defined for this project.$(RESET)"
+	@echo "$(GREEN)Running linting with auto-fix...$(RESET)"
+	@cd app && npm run lint:fix
 
 format-debian:
-	@echo "$(YELLOW)No format command defined for this project.$(RESET)"
+	@echo "$(GREEN)Formatting code files...$(RESET)"
+	@cd app && npm run format
 
 test-debian:
-	@echo "$(YELLOW)No test command defined for this project.$(RESET)"
+	@echo "$(GREEN)Running tests...$(RESET)"
+	@cd app && npm run test
 
-build-debian: | setup-debian
-	@echo "$(YELLOW)No build command defined for this project.$(RESET)"
-
-package-debian:
-	@echo "$(YELLOW)No package command defined for this project.$(RESET)"
+build-debian:
+	@echo "$(GREEN)Building and packaging project...$(RESET)"
+	@cd app && npm run build
+	@echo "$(GREEN)Build and packaging completed successfully!$(RESET)"
 
 clean-debian:
-	@echo "$(RED)WARNING: This will remove all build artifacts, caches, containers, images, and volumes!$(RESET)"
+	@echo "$(RED)WARNING: This will remove all build artifacts and caches!$(RESET)"
 	@echo "This action cannot be undone."
 	@read -p "Are you sure? Type 'yes' to continue: " confirm; \
 	if [ "$$confirm" = "yes" ]; then \
@@ -50,24 +66,9 @@ clean-debian:
 		rm -rf .pytest_cache .mypy_cache .ruff_cache htmlcov coverage dist build node_modules; \
 		find . -type d -name "__pycache__" -exec rm -rf {} +; \
 		find . -type f -name "*.pyc" -delete; \
-		if [ -f "$(DOCKER_COMPOSE_FILE)" ]; then \
-			echo "$(GREEN)Stopping and removing Docker containers, volumes, and images...$(RESET)"; \
-			$(DOCKER_COMPOSE) -f $(DOCKER_COMPOSE_FILE) down -v --rmi all --remove-orphans; \
-			echo "$(GREEN)Pruning unused Docker resources...$(RESET)"; \
-			docker system prune -f; \
-		else \
-			echo "$(YELLOW)No docker-compose.yml found. Skipping Docker cleanup.$(RESET)"; \
-		fi; \
 		echo "$(GREEN)Cleanup completed successfully!$(RESET)"; \
 	else \
 		echo "$(YELLOW)Cleanup cancelled.$(RESET)"; \
-	fi
-
-up-debian:
-	@if [ -f "$(DOCKER_COMPOSE_FILE)" ]; then \
-		$(DOCKER_COMPOSE) -f $(DOCKER_COMPOSE_FILE) up -d; \
-	else \
-		echo "$(RED)No docker-compose.yml found in docker/$(RESET)"; \
 	fi
 
 check-env-debian:

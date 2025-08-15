@@ -1,0 +1,27 @@
+# Build outputs
+dist/
+dist-electron/
+build/
+
+# Dependencies
+node_modules/
+
+# Generated files
+*.min.js
+*.min.css
+
+# Package files
+*.tgz
+*.tar.gz
+
+# Config files
+*.config.js
+*.config.ts
+*.config.mjs
+
+# Test coverage
+coverage/
+.nyc_output/
+
+# Logs
+*.log
