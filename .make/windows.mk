@@ -1,4 +1,7 @@
-# TODO: Add ANSI
+# Windows Makefile - Compatible with Command Prompt and PowerShell
+# Uses Windows-native commands and syntax
+
+# Color codes for Windows (using echo commands that work in both cmd and powershell)
 BOLD :=
 RED  :=
 GREEN :=
@@ -7,44 +10,49 @@ BLUE :=
 RESET :=
 
 setup-windows: ## Set up project dependencies
-	@echo No setup command defined for this project.
+	@echo Setting up project dependencies...
+	@echo Checking Node.js and npm installation...
+	@node --version >nul 2>&1 || (echo ERROR: Node.js is not installed. Please install Node.js first. && exit /b 1)
+	@npm --version >nul 2>&1 || (echo ERROR: npm is not installed. Please install npm first. && exit /b 1)
+	@echo Node.js version: && node --version
+	@echo npm version: && npm --version
+	@echo Installing npm packages...
+	cd app && npm install
+	@echo Setup completed successfully!
 
 run-windows: ## Run the project
-	@echo No run command defined for this project.
+	@echo Starting development server...
+	cd app && npm run dev
 
 lint-windows: ## Run code linting
-	@echo No lint command defined for this project.
+	@echo Running linting...
+	cd app && npm run lint
 
 format-windows: ## Format code
-	@echo No format command defined for this project.
+	@echo Formatting code...
+	cd app && npm run format
 
 test-windows: ## Run tests
-	@echo No test command defined for this project.
+	@echo Running tests...
+	cd app && npm run test
 
 build-windows: ## Build the project
-	@echo No build command defined for this project.
-
-package-windows: ## Package for release
-	@echo No package command defined for this project.
+	@echo Building project...
+	cd app && npm run build
 
 clean-windows: ## Clean up caches and build artifacts
-	@set /p confirm="WARNING: This will remove caches and build artifacts! This action cannot be undone. Type 'yes' to continue: " && ^
-	if not "!confirm!"=="yes" (
+	@echo WARNING: This will remove caches and build artifacts!
+	@echo This action cannot be undone.
+	@set /p confirm="Type 'yes' to continue: " && ^
+	if not "!confirm!"=="yes" ( ^
 		echo Cleanup cancelled. && ^
-		exit /b 0
+		exit /b 0 ^
 	) && ^
-	echo Cleaning up cache and build directories... && ^
-	if exist ".pytest_cache" rmdir /s /q ".pytest_cache" 2>nul && ^
-	if exist ".mypy_cache" rmdir /s /q ".mypy_cache" 2>nul && ^
-	if exist ".ruff_cache" rmdir /s /q ".ruff_cache" 2>nul && ^
-	if exist "htmlcov" rmdir /s /q "htmlcov" 2>nul && ^
-	if exist "coverage" rmdir /s /q "coverage" 2>nul && ^
+	echo Cleaning up build directories... && ^
+	cd app && ^
 	if exist "dist" rmdir /s /q "dist" 2>nul && ^
-	if exist "build" rmdir /s /q "build" 2>nul && ^
+	if exist "dist-electron" rmdir /s /q "dist-electron" 2>nul && ^
 	if exist "node_modules" rmdir /s /q "node_modules" 2>nul && ^
-	echo Removing Python cache files... && ^
-	for /d /r . %%%%d in (__pycache__) do if exist "%%%%d" rmdir /s /q "%%%%d" 2>nul && ^
-	for /r . %%%%f in (*.pyc) do if exist "%%%%f" del /q "%%%%f" 2>nul && ^
 	echo Cleanup completed successfully!
 
 help-windows: ## Show available commands
@@ -58,22 +66,21 @@ help-windows: ## Show available commands
 	@echo   format        	Format code
 	@echo   test          	Run tests
 	@echo   build         	Build the project
-	@echo   package       	Package for release
 	@echo   clean         	Clean up caches and build artifacts
 	@echo.
 
 check-env-windows: ## Check if .env file exists
-	@if not exist "$(ENV_FILE)" (
+	@if not exist "$(ENV_FILE)" ( ^
 		echo ERROR: No .env file found. && ^
 		echo. && ^
-		if exist ".env.example" (
+		if exist ".env.example" ( ^
 			echo Run the following command to create it: && ^
-			echo     copy .env.example .env
-		) else (
+			echo     copy .env.example .env ^
+		) else ( ^
 			echo Create an empty one: && ^
-			echo     type NUL ^> .env
+			echo     type NUL ^> .env ^
 		) && ^
 		echo. && ^
 		echo After creating the .env file, update the values inside it before continuing. && ^
-		exit /b 1
+		exit /b 1 ^
 	)
