@@ -24,7 +24,7 @@ endif
 help:        help-$(MK_OS)        	## Show available commands
 setup:       setup-$(MK_OS)       	## Install project dependencies
 run:         run-$(MK_OS)         	## Run the project locally
-lint:        lint-$(MK_OS)        	## Run lint checks
+lint:        lint-$(MK_OS)        	## Run lint checks and type checking
 format:      format-$(MK_OS)      	## Auto-format code
 test:        test-$(MK_OS)        	## Run tests
 build:       build-$(MK_OS)       	## Build and package the project

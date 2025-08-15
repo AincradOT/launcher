@@ -32,8 +32,8 @@ setup-debian:
 	fi
 	@echo "$(GREEN)Node.js version: $(shell node --version)$(RESET)"
 	@echo "$(GREEN)npm version: $(shell npm --version)$(RESET)"
-	@echo "$(BLUE)Installing npm packages...$(RESET)"
-	@cd app && npm ci
+	@echo "$(BLUE)Installing npm packages and configuring Husky...$(RESET)"
+	@cd app && npm install && npx husky init && npx husky add .husky/pre-commit "npx lint-staged"
 	@echo "$(GREEN)Setup completed successfully!$(RESET)"
 
 run-debian:
