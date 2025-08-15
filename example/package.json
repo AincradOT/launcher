@@ -1,0 +1,111 @@
+{
+  "name": "mythbound-launcher",
+  "version": "1.0.9",
+  "description": "Official launcher for Mythbound RPG.",
+  "main": "main.js",
+  "homepage": "https://www.mythbound.dev/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tibia-oce/mythbound-launcher-public.git"
+  },
+  "bugs": {
+    "url": "https://github.com/tibia-oce/mythbound-launcher-public/issues"
+  },
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder",
+    "build-linux": "electron-builder --linux --publish=always",
+    "build-windows": "electron-builder --win nsis --publish=always",
+    "build-all": "electron-builder --linux --win nsis --publish=always"
+  },
+  "author": {
+    "name": "Jordan",
+    "email": "contact@mythbound.dev",
+    "url": "https://www.mythbound.dev/"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^34.0.0",
+    "electron-builder": "^24.13.3"
+  },
+  "dependencies": {
+    "electron-updater": "^6.3.9",
+    "extract-zip": "^2.0.1",
+    "fs-extra": "^11.2.0",
+    "js-yaml": "^4.1.0",
+    "semver": "^7.7.1"
+  },
+  "build": {
+    "appId": "dev.mythbound.launcher",
+    "productName": "Mythbound Launcher",
+    "artifactName": "${productName} Installer ${version}.${ext}",
+    "asarUnpack": [
+      "resources/**/*"
+    ],
+    "directories": {
+      "output": "dist"
+    },
+    "extraMetadata": {
+      "updateFolder": "updates"
+    },
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "tibia-oce",
+        "repo": "mythbound-launcher-public",
+        "private": false
+      }
+    ],
+    "linux": {
+      "target": [
+        {
+          "target": "AppImage",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "deb",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "category": "Game",
+      "icon": "build/icons",
+      "synopsis": "Official launcher for Mythbound RPG.",
+      "description": "Launch and manage your Mythbound game installation with automatic updates and news feeds."
+    },
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "mythbound_logo.ico",
+      "publisherName": "Mythbound",
+      "verifyUpdateCodeSignature": false,
+      "requestedExecutionLevel": "asInvoker"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "allowElevation": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Mythbound Launcher",
+      "deleteAppDataOnUninstall": false,
+      "runAfterFinish": true,
+      "installerIcon": "mythbound_logo.ico",
+      "uninstallerIcon": "mythbound_logo.ico"
+    },
+    "files": [
+      "main.js",
+      "index.html",
+      "resources/**/*"
+    ]
+  }
+}
