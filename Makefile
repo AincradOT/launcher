@@ -18,7 +18,7 @@ else
 endif
 -include .make/$(MK_OS).mk
 
-.PHONY: help check-env setup run lint format test build package clean
+.PHONY: help check-env setup run lint format test build clean
 .DEFAULT_GOAL := help
 
 help:        help-$(MK_OS)        	## Show available commands
@@ -27,7 +27,6 @@ run:         run-$(MK_OS)         	## Run the project locally
 lint:        lint-$(MK_OS)        	## Run lint checks
 format:      format-$(MK_OS)      	## Auto-format code
 test:        test-$(MK_OS)        	## Run tests
-build:       build-$(MK_OS)       	## Build the project
-package:     build package-$(MK_OS) ## Package the project for distribution
+build:       build-$(MK_OS)       	## Build and package the project
 clean:       clean-$(MK_OS)       	## Remove caches and build artifacts
 check-env:   check-env-$(MK_OS)

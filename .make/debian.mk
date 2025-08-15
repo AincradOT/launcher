@@ -20,25 +20,42 @@ BLUE   := $(shell tput setaf 4 2>/dev/null || echo "")
 RESET  := $(shell tput sgr0 2>/dev/null || echo "")
 
 setup-debian:
-	@echo "$(YELLOW)No setup command defined for this project.$(RESET)"
+	@echo "$(GREEN)Setting up project dependencies...$(RESET)"
+	@echo "$(BLUE)Checking Node.js and npm installation...$(RESET)"
+	@if ! command -v node >/dev/null 2>&1; then \
+		echo "$(RED)ERROR: Node.js is not installed. Please install Node.js first.$(RESET)"; \
+		exit 1; \
+	fi
+	@if ! command -v npm >/dev/null 2>&1; then \
+		echo "$(RED)ERROR: npm is not installed. Please install npm first.$(RESET)"; \
+		exit 1; \
+	fi
+	@echo "$(GREEN)Node.js version: $(shell node --version)$(RESET)"
+	@echo "$(GREEN)npm version: $(shell npm --version)$(RESET)"
+	@echo "$(BLUE)Installing npm packages...$(RESET)"
+	@cd app && npm ci
+	@echo "$(GREEN)Setup completed successfully!$(RESET)"
 
 run-debian:
-	@echo "$(YELLOW)No run command defined for this project.$(RESET)"
+	@echo "$(GREEN)Starting development server...$(RESET)"
+	@cd app && npm run dev
 
 lint-debian:
-	@echo "$(YELLOW)No lint command defined for this project.$(RESET)"
+	@echo "$(GREEN)Running linting with auto-fix...$(RESET)"
+	@cd app && npm run lint:fix
 
 format-debian:
-	@echo "$(YELLOW)No format command defined for this project.$(RESET)"
+	@echo "$(GREEN)Formatting code files...$(RESET)"
+	@cd app && npm run format
 
 test-debian:
-	@echo "$(YELLOW)No test command defined for this project.$(RESET)"
+	@echo "$(GREEN)Running tests...$(RESET)"
+	@cd app && npm run test
 
-build-debian: | setup-debian
-	@echo "$(YELLOW)No build command defined for this project.$(RESET)"
-
-package-debian:
-	@echo "$(YELLOW)No package command defined for this project.$(RESET)"
+build-debian:
+	@echo "$(GREEN)Building and packaging project...$(RESET)"
+	@cd app && npm run build
+	@echo "$(GREEN)Build and packaging completed successfully!$(RESET)"
 
 clean-debian:
 	@echo "$(RED)WARNING: This will remove all build artifacts and caches!$(RESET)"
