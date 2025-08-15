@@ -9,7 +9,7 @@ This project uses [MkDocs](https://www.mkdocs.org/) with the [Material theme](ht
 The documentation is organized as follows:
 
 ```
-{{ repository }}/
+launcher/
 ├── .github/
 │   └── mkdocs.yml          # MkDocs configuration
 └── docs/
@@ -25,9 +25,9 @@ The documentation is organized as follows:
 The MkDocs configuration is located at `.github/mkdocs.yml`:
 
 ```yaml
-site_name: {{ organisation }} {{ repository }}
-site_url: https://{{ organisation }}.github.io/{{ repository }}
-repo_url: https://github.com/{{ organisation }}/{{ repository }}
+site_name: AincradOT launcher
+site_url: https://AincradOT.github.io/launcher
+repo_url: https://github.com/AincradOT/launcher
 edit_uri: edit/master/docs/
 
 theme:
