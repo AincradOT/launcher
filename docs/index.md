@@ -1,6 +1,15 @@
 # Documentation
 
-This is the official documentation for the AincradOT **launcher**.
+This is the official documentation for the AincradOT **launcher** - an Electron-based game client launcher.
+
+## About
+
+The launcher is a cross-platform desktop application built with:
+
+- **Electron** for native desktop integration
+- **React + TypeScript** for the user interface
+- **Vite** for fast development and building
+- **GitHub Actions** for automated CI/CD
 
 ## Sections
 

@@ -2,13 +2,18 @@
 
 ## Overview
 
-This project uses GitHub Actions for automated testing, building, and releasing. The pipeline integrates with our [Contributing Guidelines](https://AincradOT.github.io/launcher/contributing) to provide a seamless development experience.
+This project uses GitHub Actions for automated testing, building, and releasing of the Electron game launcher. The pipeline integrates with our [Contributing Guidelines](https://AincradOT.github.io/launcher/contributing) to provide a seamless development experience.
 
 ## Workflows
 
 ### Continuous Integration
 
-Pull requests are automatically validated through our CI pipeline, which runs linting, testing, and build verification.
+The CI pipeline automatically validates all pull requests and pushes to `master`:
+
+- **Setup**: Installs Node.js dependencies using `make setup`
+- **Lint**: Runs ESLint checks with `make lint`
+- **Test**: Executes test suite with `make test`
+- **Build**: Builds and packages the Electron app with `make build`
 
 ### Automated Releases
 
@@ -16,7 +21,8 @@ Releases are handled automatically using semantic versioning based on [Conventio
 
 - Analyzes commit messages to determine the next version
 - Creates GitHub releases with generated changelogs
-- Attaches build artifacts to releases
+- Attaches Electron build artifacts to releases
+- Supports cross-platform builds (Windows, macOS, Linux)
 
 ### Documentation Deployment
 
@@ -24,7 +30,15 @@ Documentation changes pushed to `master` automatically deploy to GitHub Pages us
 
 ### Dependency Management
 
-[Renovate](https://github.com/renovatebot/renovate) runs daily to scan for dependency updates and creates automated pull requests.
+[Renovate](https://github.com/renovatebot/renovate) runs daily to scan for dependency updates and creates automated pull requests for npm packages.
+
+## Build Artifacts
+
+The CI pipeline generates:
+
+- **Electron packages** for each supported platform
+- **Source maps** for debugging
+- **Checksums** for package verification
 
 ## Branch Protection
 
