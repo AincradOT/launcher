@@ -99,15 +99,3 @@ jobs:
           TAG="rc"
           TITLE="${{ steps.ver.outputs.next }}-rc"
           gh release create "$TAG" --prerelease --title "$TITLE" -F RELEASE_NOTES.md --target "$GITHUB_SHA"
-
-      - name: Trigger docker build for RC
-        if: success()
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          jq -n --arg tag rc --arg sha "$GITHUB_SHA" \
-            '{event_type:"prerelease", client_payload:{tag:$tag, sha:$sha}}' \
-          | gh api repos/${{ github.repository }}/dispatches \
-              -X POST \
-              -H "Accept: application/vnd.github+json" \
-              --input -

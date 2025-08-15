@@ -66,7 +66,7 @@ make build
 
 ### Clean
 
-Remove all build artifacts, caches, and Docker resources (requires confirmation):
+Remove all build artifacts and caches (requires confirmation):
 
 ```bash
 make clean

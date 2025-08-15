@@ -35,8 +35,6 @@
 *.txt text eol=lf
 *.gitignore text eol=lf
 *.gitattributes text eol=lf
-*.dockerignore text eol=lf
-Dockerfile text eol=lf
 Makefile text eol=lf
 
 ############################

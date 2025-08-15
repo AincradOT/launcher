@@ -67,9 +67,10 @@ Releases are automated via [semantic-release](https://github.com/semantic-releas
 
 - Merging PRs into **`master`** triggers a pre-release (`alpha`).
 - Creating tags from **`master`** triggers a stable release (`vX.Y.Z`) with:
+
   - Changelog updates
   - GitHub Release creation
-  - Docker image publishing
+
   - Artifact packaging
 
 You do **not** need to create tags manually. The workflow handles it.

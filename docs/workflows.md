@@ -17,7 +17,6 @@ Releases are handled automatically using semantic versioning based on [Conventio
 - Analyzes commit messages to determine the next version
 - Creates GitHub releases with generated changelogs
 - Attaches build artifacts to releases
-- Publishes Docker images to GitHub Container Registry (when applicable)
 
 ### Documentation Deployment
 

@@ -1,5 +1,3 @@
-DOCKER_COMPOSE ?= docker compose
-
 # TODO: Add ANSI
 BOLD :=
 RED  :=
@@ -29,8 +27,8 @@ build-windows: ## Build the project
 package-windows: ## Package for release
 	@echo No package command defined for this project.
 
-clean-windows: ## Clean up caches, containers, and build artifacts
-	@set /p confirm="WARNING: This will remove caches, containers, images, and volumes! This action cannot be undone. Type 'yes' to continue: " && ^
+clean-windows: ## Clean up caches and build artifacts
+	@set /p confirm="WARNING: This will remove caches and build artifacts! This action cannot be undone. Type 'yes' to continue: " && ^
 	if not "!confirm!"=="yes" (
 		echo Cleanup cancelled. && ^
 		exit /b 0
@@ -47,23 +45,7 @@ clean-windows: ## Clean up caches, containers, and build artifacts
 	echo Removing Python cache files... && ^
 	for /d /r . %%%%d in (__pycache__) do if exist "%%%%d" rmdir /s /q "%%%%d" 2>nul && ^
 	for /r . %%%%f in (*.pyc) do if exist "%%%%f" del /q "%%%%f" 2>nul && ^
-	if exist "$(DOCKER_COMPOSE_FILE)" (
-		echo Stopping and removing Docker containers, volumes, and images... && ^
-		$(DOCKER_COMPOSE) -f "$(DOCKER_COMPOSE_FILE)" down -v --rmi all --remove-orphans && ^
-		echo Pruning unused Docker resources... && ^
-		docker system prune -f
-	) else (
-		echo No docker-compose.yml found. Skipping Docker cleanup.
-	) && ^
 	echo Cleanup completed successfully!
-
-up-windows: ## Start Docker services
-	@if exist "$(DOCKER_COMPOSE_FILE)" (
-		$(DOCKER_COMPOSE) -f "$(DOCKER_COMPOSE_FILE)" up -d
-	) else (
-		echo No docker-compose.yml found in docker/ && ^
-		exit /b 1
-	)
 
 help-windows: ## Show available commands
 	@echo.
@@ -77,8 +59,7 @@ help-windows: ## Show available commands
 	@echo   test          	Run tests
 	@echo   build         	Build the project
 	@echo   package       	Package for release
-	@echo   clean         	Clean up caches, containers, and build artifacts
-	@echo   up            	Start Docker services
+	@echo   clean         	Clean up caches and build artifacts
 	@echo.
 
 check-env-windows: ## Check if .env file exists
