@@ -26,6 +26,7 @@
     "noImplicitReturns": true,
     "noImplicitOverride": true,
     "exactOptionalPropertyTypes": true,
+    "types": ["vitest/globals", "node"],
 
     // Path mapping for better imports
     "baseUrl": ".",

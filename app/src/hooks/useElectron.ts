@@ -13,8 +13,12 @@ export function useElectron() {
     const getAppInfo = async () => {
       try {
         if (window.ipcRenderer) {
-          const version = await window.ipcRenderer.invoke('app:get-version') as string;
-          const name = await window.ipcRenderer.invoke('app:get-name') as string;
+          const version = (await window.ipcRenderer.invoke(
+            'app:get-version'
+          )) as string;
+          const name = (await window.ipcRenderer.invoke(
+            'app:get-name'
+          )) as string;
           setAppVersion(version);
           setAppName(name);
         }

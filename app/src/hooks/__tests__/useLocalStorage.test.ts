@@ -49,7 +49,7 @@ describe('useLocalStorage', () => {
 
     expect(value).toBe('existing-value');
     expect(localStorageMock.getItem).toHaveBeenCalledWith('test-key');
-    
+
     // Reset the mock to prevent affecting other tests
     localStorageMock.getItem.mockRestore();
   });
@@ -73,7 +73,7 @@ describe('useLocalStorage', () => {
   it('should handle function updates like useState', () => {
     // Clear any existing values to ensure clean state
     localStorageMock.clear();
-    
+
     const { result } = renderHook(() => useLocalStorage('test-key', 0));
     const [, setValue] = result.current;
 
@@ -107,7 +107,7 @@ describe('useLocalStorage', () => {
     const [value] = result.current;
 
     expect(value).toBe('fallback-value');
-    
+
     // Reset the mock to prevent affecting other tests
     localStorageMock.getItem.mockRestore();
   });

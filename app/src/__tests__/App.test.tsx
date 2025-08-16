@@ -2,7 +2,7 @@ import React from 'react';
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import App from '../App';
-import { AppProvider } from '@/contexts/AppContext';
+import { AppProvider } from '../contexts/AppContext';
 
 describe('App', () => {
   it('renders without crashing', () => {
@@ -11,7 +11,7 @@ describe('App', () => {
         <App />
       </AppProvider>
     );
-    expect(screen.getByText('Welcome to Aincrad Launcher')).toBeInTheDocument();
+    expect(screen.getByText('Welcome to Aincrad Launcher')).toBeTruthy();
   });
 
   it('displays the count button', () => {
@@ -20,6 +20,6 @@ describe('App', () => {
         <App />
       </AppProvider>
     );
-    expect(screen.getByText(/Count is/)).toBeInTheDocument();
+    expect(screen.getByText(/Count is/)).toBeTruthy();
   });
 });

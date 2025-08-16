@@ -49,10 +49,10 @@ describe('AppContext', () => {
         </AppProvider>
       );
 
-      expect(screen.getByTestId('user')).toHaveTextContent('no-user');
-      expect(screen.getByTestId('theme')).toHaveTextContent('system');
-      expect(screen.getByTestId('loading')).toHaveTextContent('false');
-      expect(screen.getByTestId('error')).toHaveTextContent('no-error');
+      expect(screen.getByTestId('user').textContent).toBe('no-user');
+      expect(screen.getByTestId('theme').textContent).toBe('system');
+      expect(screen.getByTestId('loading').textContent).toBe('false');
+      expect(screen.getByTestId('error').textContent).toBe('no-error');
     });
 
     it('should update user state', () => {
@@ -65,7 +65,7 @@ describe('AppContext', () => {
       const setUserButton = screen.getByText('Set User');
       fireEvent.click(setUserButton);
 
-      expect(screen.getByTestId('user')).toHaveTextContent('testuser');
+      expect(screen.getByTestId('user').textContent).toBe('testuser');
     });
 
     it('should update theme state', () => {
@@ -78,7 +78,7 @@ describe('AppContext', () => {
       const setThemeButton = screen.getByText('Set Light Theme');
       fireEvent.click(setThemeButton);
 
-      expect(screen.getByTestId('theme')).toHaveTextContent('light');
+      expect(screen.getByTestId('theme').textContent).toBe('light');
     });
 
     it('should update loading state', () => {
@@ -91,7 +91,7 @@ describe('AppContext', () => {
       const setLoadingButton = screen.getByText('Set Loading');
       fireEvent.click(setLoadingButton);
 
-      expect(screen.getByTestId('loading')).toHaveTextContent('true');
+      expect(screen.getByTestId('loading').textContent).toBe('true');
     });
 
     it('should update error state', () => {
@@ -104,7 +104,7 @@ describe('AppContext', () => {
       const setErrorButton = screen.getByText('Set Error');
       fireEvent.click(setErrorButton);
 
-      expect(screen.getByTestId('error')).toHaveTextContent('test error');
+      expect(screen.getByTestId('error').textContent).toBe('test error');
     });
 
     it('should reset state', () => {
@@ -124,10 +124,10 @@ describe('AppContext', () => {
       const resetButton = screen.getByText('Reset');
       fireEvent.click(resetButton);
 
-      expect(screen.getByTestId('user')).toHaveTextContent('no-user');
-      expect(screen.getByTestId('theme')).toHaveTextContent('system');
-      expect(screen.getByTestId('loading')).toHaveTextContent('false');
-      expect(screen.getByTestId('error')).toHaveTextContent('no-error');
+      expect(screen.getByTestId('user').textContent).toBe('no-user');
+      expect(screen.getByTestId('theme').textContent).toBe('system');
+      expect(screen.getByTestId('loading').textContent).toBe('false');
+      expect(screen.getByTestId('error').textContent).toBe('no-error');
     });
   });
 
