@@ -71,10 +71,18 @@ jobs:
           $version = $tag.TrimStart('v')
           echo "VERSION=$version" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
 
+      - name: Set app version in package.json (Windows)
+        shell: powershell
+        run: |
+          $pkgPath = Join-Path $env:GITHUB_WORKSPACE 'app\package.json'
+          $json = Get-Content $pkgPath -Raw | ConvertFrom-Json
+          $json.version = $env:VERSION
+          $json | ConvertTo-Json -Depth 100 | Set-Content -Path $pkgPath -Encoding UTF8
+
       - name: Build & Publish Windows (nsis)
         run: |
           cd app
-          npx electron-builder --win nsis --publish=always -c.extraMetadata.version=$env:VERSION
+          npx electron-builder --win nsis --publish=always
         shell: powershell
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
@@ -92,6 +100,13 @@ jobs:
             exit 1
           }
         shell: powershell
+
+      - name: Upload latest.yml (Windows)
+        uses: actions/upload-artifact@v4
+        with:
+          name: latest-windows-yml
+          path: app/dist/latest.yml
+          if-no-files-found: error
 
   # Linux build job
   linux:
@@ -189,6 +204,13 @@ jobs:
             exit 1
           fi
 
+      - name: Upload latest-linux.yml (Linux)
+        uses: actions/upload-artifact@v4
+        with:
+          name: latest-linux-yml
+          path: app/dist/latest-linux.yml
+          if-no-files-found: error
+
   # Post-build verification and cleanup
   verification:
     name: Verify Release
@@ -209,6 +231,76 @@ jobs:
             echo "  Linux: ${{ needs.linux.result }}"
             exit 1
           fi
+
+  commit-latest:
+    name: Commit latest.yml files
+    needs: [windows, linux]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create GitHub App token
+        id: app-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.TERRAFORM_GITHUB_APP_ID }}
+          private-key: ${{ secrets.TERRAFORM_GITHUB_APP_PEM }}
+          owner: AincradOT
+          repositories: aincrad-launcher
+
+      - uses: actions/checkout@v4
+        with:
+          repository: AincradOT/aincrad-launcher
+          ref: main
+          token: ${{ steps.app-token.outputs.token }}
+          fetch-depth: 0
+
+      - name: Download Windows latest.yml
+        uses: actions/download-artifact@v4
+        with:
+          name: latest-windows-yml
+          path: _latest/windows
+
+      - name: Download Linux latest-linux.yml
+        uses: actions/download-artifact@v4
+        with:
+          name: latest-linux-yml
+          path: _latest/linux
+
+      - name: Determine version from tag
+        id: ver
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "${{ github.event_name }}" == "push" ]]; then
+            tag="${{ github.ref_name }}"
+          else
+            tag="${{ github.event.client_payload.tag }}"
+          fi
+          version="${tag#v}"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      - name: Commit latest.yml files
+        shell: bash
+        env:
+          VERSION: ${{ steps.ver.outputs.version }}
+        run: |
+          set -euo pipefail
+          # Rename/move into repo root with requested names
+          if [ -f _latest/windows/latest.yml ]; then
+            mv -f _latest/windows/latest.yml latest-windows.yml
+          fi
+          if [ -f _latest/linux/latest-linux.yml ]; then
+            mv -f _latest/linux/latest-linux.yml latest-linux.yml
+          fi
+
+          git config user.name  "aincradot[bot]"
+          git config user.email "222937216+aincradot[bot]@users.noreply.github.com"
+          git add latest-windows.yml latest-linux.yml || true
+          if git diff --cached --quiet; then
+            echo "No latest.yml changes to commit"
+            exit 0
+          fi
+          git commit -m "chore(release): update latest yml manifests for v$VERSION"
+          git push origin HEAD:main
 
       - name: Verify public repository
         run: |
