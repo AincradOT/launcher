@@ -34,6 +34,8 @@ jobs:
         with:
           app-id: ${{ secrets.TERRAFORM_GITHUB_APP_ID }}
           private-key: ${{ secrets.TERRAFORM_GITHUB_APP_PEM }}
+          owner: AincradOT
+          repositories: aincrad-launcher
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -61,10 +63,18 @@ jobs:
           npm run build:electron
         shell: powershell
 
+      - name: Determine version from tag
+        shell: powershell
+        run: |
+          $tag = if ('${{ github.event_name }}' -eq 'push') { '${{ github.ref_name }}' } else { '${{ github.event.client_payload.tag }}' }
+          if (-not $tag) { Write-Error 'No release tag provided (expected vX.Y.Z)'; exit 1 }
+          $version = $tag.TrimStart('v')
+          echo "VERSION=$version" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
       - name: Build & Publish Windows (nsis)
         run: |
           cd app
-          npx electron-builder --win nsis --publish=always
+          npx electron-builder --win nsis --publish=always -c.extraMetadata.version=$env:VERSION
         shell: powershell
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
@@ -98,6 +108,8 @@ jobs:
         with:
           app-id: ${{ secrets.TERRAFORM_GITHUB_APP_ID }}
           private-key: ${{ secrets.TERRAFORM_GITHUB_APP_PEM }}
+          owner: AincradOT
+          repositories: aincrad-launcher
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -142,10 +154,23 @@ jobs:
           npm run build:renderer
           npm run build:electron
 
+      - name: Determine version from tag
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "${{ github.event_name }}" == "push" ]]; then
+            tag="${{ github.ref_name }}"
+          else
+            tag="${{ github.event.client_payload.tag }}"
+          fi
+          test -n "$tag" || { echo "No release tag provided (expected vX.Y.Z)" >&2; exit 1; }
+          version="${tag#v}"
+          echo "VERSION=$version" >> "$GITHUB_ENV"
+
       - name: Build & Publish Linux (AppImage & deb)
         run: |
           cd app
-          npx electron-builder --linux --publish=always
+          npx electron-builder --linux --publish=always -c.extraMetadata.version=$VERSION
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
           GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
