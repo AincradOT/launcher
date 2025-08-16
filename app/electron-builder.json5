@@ -15,6 +15,9 @@
   buildDependenciesFromSource: false,
   npmRebuild: false,
 
+  // Disable code signing globally
+  forceCodeSigning: false,
+
   // Output Configuration
   directories: {
     output: 'dist',
@@ -52,6 +55,8 @@
     requestedExecutionLevel: 'asInvoker',
     sign: false,
     signAndEditExecutable: false,
+    verifyUpdateCodeSignature: false,
+    forceCodeSigning: false,
   },
 
   // NSIS Installer Configuration
