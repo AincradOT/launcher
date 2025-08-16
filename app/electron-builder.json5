@@ -53,9 +53,7 @@
     ],
     artifactName: '${productName} Installer.${ext}',
     requestedExecutionLevel: 'asInvoker',
-    sign: false,
-    signAndEditExecutable: false,
-    verifyUpdateCodeSignature: false,
+    // Disable code signing using the current API
     forceCodeSigning: false,
   },
 
@@ -95,7 +93,7 @@
       owner: 'AincradOT',
       repo: 'aincrad-launcher',
       private: false,
-      releaseType: 'prerelease',
+      releaseType: 'release',
     },
   ],
 }

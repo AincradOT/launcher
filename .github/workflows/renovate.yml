@@ -51,9 +51,16 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
+      - name: Create GitHub App token
+        id: app-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.TERRAFORM_GITHUB_APP_ID }}
+          private-key: ${{ secrets.TERRAFORM_GITHUB_APP_PEM }}
+
       - name: Run Renovate
         uses: renovatebot/github-action@v43.0.6
         with:
-          token: ${{ secrets.RENOVATE_TOKEN }}
+          token: ${{ steps.app-token.outputs.token }}
           configurationFile: .github/renovate.json
           renovate-version: "${{ env.WORKFLOW_RENOVATE_VERSION }}"
