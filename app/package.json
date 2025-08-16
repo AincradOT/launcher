@@ -4,6 +4,10 @@
   "version": "0.0.0",
   "description": "A modern game launcher built with Electron and React for AincradOT",
   "homepage": "https://github.com/AincradOT/launcher",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AincradOT/launcher.git"
+  },
   "author": {
     "name": "AincradOT",
     "email": "contact@aincradot.com"
