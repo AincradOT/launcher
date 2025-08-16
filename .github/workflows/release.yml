@@ -27,6 +27,13 @@ jobs:
           git tag -d rc || true
           git update-ref -d refs/tags/rc || true
 
+      - name: Create GitHub App token
+        id: app-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.TERRAFORM_GITHUB_APP_ID }}
+          private-key: ${{ secrets.TERRAFORM_GITHUB_APP_PEM }}
+
       - uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -47,7 +54,7 @@ jobs:
 
       - name: Run semantic-release
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
         run: npx --no-install semantic-release --no-ci
 
       - name: Determine released tag
@@ -65,7 +72,7 @@ jobs:
 
       - name: Trigger launcher build and publish
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
         run: |
           jq -n --arg tag "${{ steps.tag.outputs.tag }}" \
             '{event_type:"release", client_payload:{tag:$tag}}' \
