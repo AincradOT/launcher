@@ -1,6 +1,7 @@
 import { app, BrowserWindow, ipcMain, shell, dialog } from 'electron';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
+import { existsSync } from 'node:fs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -32,7 +33,7 @@ function createWindow() {
   // Create the browser window.
   // Try to set icon if it exists, otherwise use default
   const iconPath = path.join(process.env.VITE_PUBLIC, 'electron-vite.svg');
-  const iconExists = require('fs').existsSync(iconPath);
+  const iconExists = existsSync(iconPath);
 
   win = new BrowserWindow({
     width: 1200,
