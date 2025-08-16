@@ -94,8 +94,7 @@
       repo: 'aincrad-launcher',
       private: false,
       releaseType: 'release',
-      draft: false,
-      prerelease: false,
+      vPrefixedTagName: true,
     },
   ],
 }

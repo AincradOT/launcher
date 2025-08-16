@@ -79,16 +79,25 @@ test-debian: ## Run tests
 	@echo "$(GREEN)Running tests...$(RESET)"
 	@cd app && npm run test
 
-build-debian: ## Build the project
+build-debian: ## Build the project locally (no packaging)
 	@echo "$(GREEN)Building project...$(RESET)"
 	@cd app && (\
 		echo "$(BLUE)Building renderer and electron...$(RESET)" && \
-		npm run build:renderer && npm run build:electron && \
-		echo "$(BLUE)Building packages for Linux and Windows...$(RESET)" && \
-		npm run package:all || echo "$(YELLOW)Some package builds failed, check output above for details$(RESET)" \
+		npm run build:renderer && npm run build:electron \
 	)
 	@echo "$(GREEN)Build completed!$(RESET)"
-	@echo "$(BLUE)Check the dist/ directory for built packages.$(RESET)"
+	@echo "$(BLUE)Check the dist/ and dist-electron/ directories for built files.$(RESET)"
+
+package-debian: ## Build and package for Linux only
+	@echo "$(GREEN)Building and packaging project...$(RESET)"
+	@cd app && (\
+		echo "$(BLUE)Building renderer and electron...$(RESET)" && \
+		npm run build:renderer && npm run build:electron && \
+		echo "$(BLUE)Creating Linux packages...$(RESET)" && \
+		npm run package:linux || echo "$(YELLOW)Package creation failed, check output above for details$(RESET)" \
+	)
+	@echo "$(GREEN)Packaging completed!$(RESET)"
+	@echo "$(BLUE)Check the dist/ directory for Linux packages.$(RESET)"
 
 clean-debian: ## Clean up caches and build artifacts
 	@echo "$(RED)WARNING: This will remove all build artifacts and caches!$(RESET)"
