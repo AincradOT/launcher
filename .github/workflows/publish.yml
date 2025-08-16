@@ -26,7 +26,7 @@ jobs:
     timeout-minutes: 30
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Create GitHub App token
         id: app-token
@@ -112,7 +112,7 @@ jobs:
     timeout-minutes: 30
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Create GitHub App token
         id: app-token
@@ -243,7 +243,7 @@ jobs:
           owner: AincradOT
           repositories: aincrad-launcher
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           repository: AincradOT/aincrad-launcher
           ref: main
