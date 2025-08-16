@@ -74,10 +74,7 @@ jobs:
       - name: Set app version in package.json (Windows)
         shell: powershell
         run: |
-          $pkgPath = Join-Path $env:GITHUB_WORKSPACE 'app\package.json'
-          $json = Get-Content $pkgPath -Raw | ConvertFrom-Json
-          $json.version = $env:VERSION
-          $json | ConvertTo-Json -Depth 100 | Set-Content -Path $pkgPath -Encoding UTF8
+          node -e "const fs=require('fs'); const path=require('path'); const pkg=path.join(process.env.GITHUB_WORKSPACE,'app','package.json'); const j=JSON.parse(fs.readFileSync(pkg,'utf8')); j.version=process.env.VERSION; fs.writeFileSync(pkg, JSON.stringify(j, null, 2)+'\n', {encoding:'utf8'});"
 
       - name: Build & Publish Windows (nsis)
         run: |
