@@ -52,12 +52,6 @@
       }
     ],
     [
-      "@semantic-release/exec",
-      {
-        "prepareCmd": "make setup && make build VERSION=${nextRelease.version}"
-      }
-    ],
-    [
       "@semantic-release/github",
       {
         "successComment": false,
@@ -70,13 +64,10 @@
         ],
         "assets": [
           {
-            "path": "dist/**/*.zip"
+            "path": "dist/**/*.exe"
           },
           {
-            "path": "dist/**/*.tar.gz"
-          },
-          {
-            "path": "dist/**/*.tgz"
+            "path": "dist/**/*.AppImage"
           },
           {
             "path": "dist/**/*.deb"

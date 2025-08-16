@@ -64,6 +64,8 @@ jobs:
           echo "tag=$TAG" >> "$GITHUB_OUTPUT"
 
       - name: Trigger launcher build and publish
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           jq -n --arg tag "${{ steps.tag.outputs.tag }}" \
             '{event_type:"release", client_payload:{tag:$tag}}' \
