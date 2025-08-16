@@ -9,42 +9,56 @@ YELLOW := $(shell tput setaf 3 2>/dev/null || echo "")
 BLUE   := $(shell tput setaf 4 2>/dev/null || echo "")
 RESET  := $(shell tput sgr0 2>/dev/null || echo "")
 
-setup-macos:
-	@echo "$(YELLOW)No run command defined for this project.$(RESET)"
+setup-macos: ## Set up project dependencies
+	@echo "$(GREEN)Setting up project dependencies...$(RESET)"
+	@echo "$(BLUE)Checking Node.js and npm installation...$(RESET)"
+	@if ! command -v node >/dev/null 2>&1; then \
+		echo "$(RED)ERROR: Node.js is not installed. Please install Node.js first.$(RESET)"; \
+		exit 1; \
+	fi
+	@if ! command -v npm >/dev/null 2>&1; then \
+		echo "$(RED)ERROR: npm is not installed. Please install npm first.$(RESET)"; \
+		exit 1; \
+	fi
+	@echo "$(GREEN)Node.js version: $(shell node --version)$(RESET)"
+	@echo "$(GREEN)npm version: $(shell npm --version)$(RESET)"
+	@echo "$(BLUE)Installing npm packages...$(RESET)"
+	cd app && npm install
+	@echo "$(GREEN)Setup completed successfully!$(RESET)"
 
-run-macos:
-	@echo "$(YELLOW)No run command defined for this project.$(RESET)"
+run-macos: ## Run the project
+	@echo "$(GREEN)Starting development server...$(RESET)"
+	cd app && npm run dev
 
-lint-macos:
-	@echo "$(YELLOW)No lint command defined for this project.$(RESET)"
+lint-macos: ## Run code linting
+	@echo "$(GREEN)Running linting...$(RESET)"
+	cd app && npm run lint
 
-format-macos:
-	@echo "$(YELLOW)No format command defined for this project.$(RESET)"
+format-macos: ## Format code
+	@echo "$(GREEN)Formatting code...$(RESET)"
+	cd app && npm run format
 
-test-macos:
-	@echo "$(YELLOW)No test command defined for this project.$(RESET)"
+test-macos: ## Run tests
+	@echo "$(GREEN)Running tests...$(RESET)"
+	cd app && npm run test
 
-build-macos:
-	@echo "$(YELLOW)No build command defined for this project.$(RESET)"
+build-macos: ## Build the project
+	@echo "$(GREEN)Building project...$(RESET)"
+	cd app && npm run build
 
-package-macos:
-	@echo "$(YELLOW)No package command defined for this project.$(RESET)"
-
-clean-macos:
+clean-macos: ## Clean up caches and build artifacts
 	@echo "$(RED)WARNING: This will remove all build artifacts and caches!$(RESET)"
 	@echo "This action cannot be undone."
 	@read -p "Are you sure? Type 'yes' to continue: " confirm; \
 	if [ "$$confirm" = "yes" ]; then \
 		echo "$(GREEN)Cleaning local caches and artifacts...$(RESET)"; \
-		rm -rf .pytest_cache .mypy_cache .ruff_cache htmlcov coverage dist build node_modules; \
-		find . -type d -name "__pycache__" -exec rm -rf {} +; \
-		find . -type f -name "*.pyc" -delete; \
+		cd app && rm -rf dist dist-electron node_modules; \
 		echo "$(GREEN)Cleanup completed successfully!$(RESET)"; \
 	else \
 		echo "$(YELLOW)Cleanup cancelled.$(RESET)"; \
 	fi
 
-check-env-macos:
+check-env-macos: ## Check if .env file exists
 	@if [ ! -f "$(ENV_FILE)" ]; then \
 		echo "$(RED)ERROR:$(RESET) No .env file found."; \
 		echo ""; \
@@ -60,7 +74,7 @@ check-env-macos:
 		exit 1; \
 	fi
 
-help-macos:
+help-macos: ## Show available commands
 	@echo ""
 	@echo "$(BOLD)$(BLUE)Available Commands for $(PROJECT_NAME)$(RESET)"
 	@echo ""

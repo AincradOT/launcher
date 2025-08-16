@@ -1,14 +1,6 @@
 ## About
 
-The AincradOT **Launcher** is an Electron-based game client launcher built with React, TypeScript, and Vite. It provides a modern, cross-platform desktop application for launching and managing game clients with a focus on security, performance, and user experience.
-
-The launcher features:
-
-- **Cross-platform compatibility** (Windows, macOS, Linux)
-- **Modern React-based UI** with TypeScript
-- **Electron main process** for native desktop integration
-- **Automated build pipeline** with GitHub Actions CI/CD
-- **Code quality tools** (ESLint, Prettier, Vitest)
+The AincradOT **Launcher** is an Electron-based game client launcher built with React, TypeScript, and Vite. It provides a cross-platform desktop application for launching and managing the game client.
 
 ## Requirements
 
@@ -16,6 +8,7 @@ Make sure you have the following installed:
 
 - [Git](https://git-scm.com/downloads) – Version control system
 - [Make](https://www.gnu.org/software/make/#download) – Build automation tool
+- [Node & Npm](https://nodejs.org/) – Application runtime and dependency management
 
 ## Getting Started
 

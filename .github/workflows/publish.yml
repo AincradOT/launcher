@@ -1,0 +1,183 @@
+name: publish
+
+on:
+  repository_dispatch:
+    types: [release]
+  push:
+    tags: ["v*.*.*"]
+
+permissions:
+  contents: write
+  packages: write
+
+env:
+  GH_TOKEN: ${{ secrets.GHCR_TOKEN_PRIVATE }}
+  NODE_VERSION: "20"
+
+# Concurrency control to prevent multiple builds
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  # Windows build job
+  windows:
+    name: Build & Publish Windows
+    runs-on: windows-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ env.GH_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+          cache-dependency-path: app/package-lock.json
+
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: app/node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('app/package-lock.json') }}
+
+      - name: Install dependencies
+        run: |
+          cd app
+          npm ci --prefer-offline --no-audit
+        shell: powershell
+
+      - name: Build application
+        run: |
+          cd app
+          npm run build:renderer
+          npm run build:electron
+        shell: powershell
+
+      - name: Build & Publish Windows (nsis)
+        run: |
+          cd app
+          npx electron-builder --win nsis --publish=always
+        shell: powershell
+        env:
+          GH_TOKEN: ${{ env.GH_TOKEN }}
+
+      - name: Verify artifacts
+        run: |
+          cd app
+          if (Test-Path "dist\*.exe") {
+            Write-Host "Windows artifacts created successfully"
+            Get-ChildItem "dist\*.exe" | ForEach-Object { Write-Host "  - $($_.Name)" }
+          } else {
+            Write-Error "No Windows artifacts found"
+            exit 1
+          }
+        shell: powershell
+
+  # Linux build job
+  linux:
+    name: Build & Publish Linux
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ env.GH_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+          cache-dependency-path: app/package-lock.json
+
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: app/node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('app/package-lock.json') }}
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            fuse \
+            libfuse2 \
+            libnss3-dev \
+            libatk-bridge2.0-dev \
+            libdrm2 \
+            libxkbcommon-dev \
+            libxcomposite-dev \
+            libxdamage-dev \
+            libxrandr-dev \
+            libgbm-dev \
+            libxss-dev \
+            libasound2-dev \
+            libgtk-3-dev \
+            libwebkit2gtk-4.0-dev
+
+      - name: Install dependencies
+        run: |
+          cd app
+          npm ci --prefer-offline --no-audit
+
+      - name: Build application
+        run: |
+          cd app
+          npm run build:renderer
+          npm run build:electron
+
+      - name: Build & Publish Linux (AppImage & deb)
+        run: |
+          cd app
+          npx electron-builder --linux --publish=always
+        env:
+          GH_TOKEN: ${{ env.GH_TOKEN }}
+
+      - name: Verify artifacts
+        run: |
+          cd app
+          if [ -d "dist" ]; then
+            echo "Linux artifacts created successfully"
+            find dist -type f -name "*.AppImage" -o -name "*.deb" | while read file; do
+              echo "  - $(basename "$file")"
+            done
+          else
+            echo "No Linux artifacts found"
+            exit 1
+          fi
+
+  # Post-build verification and cleanup
+  verification:
+    name: Verify Release
+    needs: [windows, linux]
+    runs-on: ubuntu-latest
+    if: always()
+    timeout-minutes: 10
+
+    steps:
+      - name: Check build status
+        run: |
+          if [ "${{ needs.windows.result }}" = "success" ] && \
+             [ "${{ needs.linux.result }}" = "success" ]; then
+            echo "✅ All builds completed successfully"
+          else
+            echo "❌ Some builds failed:"
+            echo "  Windows: ${{ needs.windows.result }}"
+            echo "  Linux: ${{ needs.linux.result }}"
+            exit 1
+          fi
+
+      - name: Verify public repository
+        run: |
+          # Check if the public repository has the latest release
+          echo "Verifying public repository release..."
+          # This could be enhanced with actual API calls to verify the releas

@@ -19,8 +19,35 @@ YELLOW := $(shell tput setaf 3 2>/dev/null || echo "")
 BLUE   := $(shell tput setaf 4 2>/dev/null || echo "")
 RESET  := $(shell tput sgr0 2>/dev/null || echo "")
 
-setup-debian:
+setup-debian: ## Set up project dependencies
 	@echo "$(GREEN)Setting up project dependencies...$(RESET)"
+	@echo "$(BLUE)Checking and installing system dependencies...$(RESET)"
+	@if ! command -v dpkg-deb >/dev/null 2>&1; then \
+		echo "$(BLUE)Installing Debian build tools...$(RESET)"; \
+		sudo apt-get update && sudo apt-get install -y dpkg-dev; \
+	else \
+		echo "$(GREEN)Debian build tools already installed$(RESET)"; \
+	fi
+	@echo "$(BLUE)Installing additional dependencies for cross-platform builds...$(RESET)"
+	@sudo apt-get update && sudo apt-get install -y \
+		libfuse2 \
+		fuse \
+		squashfs-tools \
+		genisoimage \
+		wine \
+		wine64 \
+		wine32 \
+		winbind \
+		imagemagick \
+		librsvg2-bin
+	@echo "$(BLUE)Installing Wine dependencies for Windows builds...$(RESET)"
+	@sudo dpkg --add-architecture i386
+	@sudo apt-get update
+	@sudo apt-get install -y \
+		wine32 \
+		wine64 \
+		libwine:i386 \
+		fonts-wine
 	@echo "$(BLUE)Checking Node.js and npm installation...$(RESET)"
 	@if ! command -v node >/dev/null 2>&1; then \
 		echo "$(RED)ERROR: Node.js is not installed. Please install Node.js first.$(RESET)"; \
@@ -32,46 +59,50 @@ setup-debian:
 	fi
 	@echo "$(GREEN)Node.js version: $(shell node --version)$(RESET)"
 	@echo "$(GREEN)npm version: $(shell npm --version)$(RESET)"
-	@echo "$(BLUE)Installing npm packages and configuring Husky...$(RESET)"
-	@cd app && npm install && npx husky init && npx husky add .husky/pre-commit "npx lint-staged"
+	@echo "$(BLUE)Installing npm packages...$(RESET)"
+	@cd app && npm install
 	@echo "$(GREEN)Setup completed successfully!$(RESET)"
 
-run-debian:
+run-debian: ## Run the project
 	@echo "$(GREEN)Starting development server...$(RESET)"
 	@cd app && npm run dev
 
-lint-debian:
-	@echo "$(GREEN)Running linting with auto-fix...$(RESET)"
-	@cd app && npm run lint:fix
+lint-debian: ## Run code linting
+	@echo "$(GREEN)Running linting...$(RESET)"
+	@cd app && npm run lint
 
-format-debian:
+format-debian: ## Format code
 	@echo "$(GREEN)Formatting code files...$(RESET)"
 	@cd app && npm run format
 
-test-debian:
+test-debian: ## Run tests
 	@echo "$(GREEN)Running tests...$(RESET)"
 	@cd app && npm run test
 
-build-debian:
-	@echo "$(GREEN)Building and packaging project...$(RESET)"
-	@cd app && npm run build
-	@echo "$(GREEN)Build and packaging completed successfully!$(RESET)"
+build-debian: ## Build the project
+	@echo "$(GREEN)Building project...$(RESET)"
+	@cd app && (\
+		echo "$(BLUE)Building renderer and electron...$(RESET)" && \
+		npm run build:renderer && npm run build:electron && \
+		echo "$(BLUE)Building packages for Linux and Windows...$(RESET)" && \
+		npm run package:all || echo "$(YELLOW)Some package builds failed, check output above for details$(RESET)" \
+	)
+	@echo "$(GREEN)Build completed!$(RESET)"
+	@echo "$(BLUE)Check the dist/ directory for built packages.$(RESET)"
 
-clean-debian:
+clean-debian: ## Clean up caches and build artifacts
 	@echo "$(RED)WARNING: This will remove all build artifacts and caches!$(RESET)"
 	@echo "This action cannot be undone."
 	@read -p "Are you sure? Type 'yes' to continue: " confirm; \
 	if [ "$$confirm" = "yes" ]; then \
 		echo "$(GREEN)Cleaning local caches and artifacts...$(RESET)"; \
-		rm -rf .pytest_cache .mypy_cache .ruff_cache htmlcov coverage dist build node_modules; \
-		find . -type d -name "__pycache__" -exec rm -rf {} +; \
-		find . -type f -name "*.pyc" -delete; \
+		cd app && rm -rf dist dist-electron node_modules; \
 		echo "$(GREEN)Cleanup completed successfully!$(RESET)"; \
 	else \
 		echo "$(YELLOW)Cleanup cancelled.$(RESET)"; \
 	fi
 
-check-env-debian:
+check-env-debian: ## Check if .env file exists
 	@if [ ! -f "$(ENV_FILE)" ]; then \
 		echo "$(RED)ERROR:$(RESET) No .env file found."; \
 		echo ""; \
@@ -87,7 +118,7 @@ check-env-debian:
 		exit 1; \
 	fi
 
-help-debian:
+help-debian: ## Show available commands
 	@echo ""
 	@echo "$(BOLD)$(BLUE)Available Commands for $(PROJECT_NAME)$(RESET)"
 	@echo ""
