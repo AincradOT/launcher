@@ -12,13 +12,12 @@
   compression: 'maximum',
   removePackageScripts: true,
   removePackageKeywords: true,
-  // Add debugging and build options
   buildDependenciesFromSource: false,
   npmRebuild: false,
 
   // Output Configuration
   directories: {
-    output: 'release/${version}',
+    output: 'dist',
     buildResources: 'build',
   },
 
@@ -48,18 +47,10 @@
         target: 'nsis',
         arch: ['x64'],
       },
-      {
-        target: 'portable',
-        arch: ['x64'],
-      },
     ],
-    artifactName: '${productName}-windows.${ext}',
-    // Comment out icon reference until ICO file is available
-    // icon: 'build/icon.ico',
+    artifactName: '${productName} Installer.${ext}',
     requestedExecutionLevel: 'asInvoker',
-    // Disable code signing for cross-platform builds
     sign: false,
-    // Disable Windows-specific metadata that requires Wine
     signAndEditExecutable: false,
   },
 
@@ -72,13 +63,6 @@
     createDesktopShortcut: true,
     createStartMenuShortcut: true,
     shortcutName: 'Aincrad Launcher',
-    // Comment out icon references until ICO files are available
-    // installerIcon: 'build/icon.ico',
-    // uninstallerIcon: 'build/icon.ico',
-    // Comment out optional resources that may not exist
-    // installerHeader: 'build/installer-header.bmp',
-    // installerSidebar: 'build/installer-sidebar.bmp',
-    // uninstallerSidebar: 'build/installer-sidebar.bmp',
   },
 
   // Linux Configuration
@@ -93,18 +77,20 @@
         arch: ['x64'],
       },
     ],
-    artifactName: '${productName}-linux.${ext}',
+    artifactName: '${productName}.${ext}',
     icon: 'build/icon.png',
     category: 'Game',
     maintainer: 'AincradOT <contact@aincradot.com>',
   },
 
   // Publishing Configuration
-  publish: {
-    provider: 'github',
-    owner: 'AincradOT',
-    repo: 'launcher',
-    private: false,
-    releaseType: 'release',
-  },
+  publish: [
+    {
+      provider: 'github',
+      owner: 'AincradOT',
+      repo: 'aincrad-launcher',
+      private: false,
+      releaseType: 'prerelease',
+    },
+  ],
 }

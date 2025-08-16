@@ -88,7 +88,7 @@ build-debian: ## Build the project
 		npm run package:all || echo "$(YELLOW)Some package builds failed, check output above for details$(RESET)" \
 	)
 	@echo "$(GREEN)Build completed!$(RESET)"
-	@echo "$(BLUE)Check the release/ directory for built packages.$(RESET)"
+	@echo "$(BLUE)Check the dist/ directory for built packages.$(RESET)"
 
 clean-debian: ## Clean up caches and build artifacts
 	@echo "$(RED)WARNING: This will remove all build artifacts and caches!$(RESET)"
