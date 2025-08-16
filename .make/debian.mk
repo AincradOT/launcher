@@ -21,6 +21,33 @@ RESET  := $(shell tput sgr0 2>/dev/null || echo "")
 
 setup-debian: ## Set up project dependencies
 	@echo "$(GREEN)Setting up project dependencies...$(RESET)"
+	@echo "$(BLUE)Checking and installing system dependencies...$(RESET)"
+	@if ! command -v dpkg-deb >/dev/null 2>&1; then \
+		echo "$(BLUE)Installing Debian build tools...$(RESET)"; \
+		sudo apt-get update && sudo apt-get install -y dpkg-dev; \
+	else \
+		echo "$(GREEN)Debian build tools already installed$(RESET)"; \
+	fi
+	@echo "$(BLUE)Installing additional dependencies for cross-platform builds...$(RESET)"
+	@sudo apt-get update && sudo apt-get install -y \
+		libfuse2 \
+		fuse \
+		squashfs-tools \
+		genisoimage \
+		wine \
+		wine64 \
+		wine32 \
+		winbind \
+		imagemagick \
+		librsvg2-bin
+	@echo "$(BLUE)Installing Wine dependencies for Windows builds...$(RESET)"
+	@sudo dpkg --add-architecture i386
+	@sudo apt-get update
+	@sudo apt-get install -y \
+		wine32 \
+		wine64 \
+		libwine:i386 \
+		fonts-wine
 	@echo "$(BLUE)Checking Node.js and npm installation...$(RESET)"
 	@if ! command -v node >/dev/null 2>&1; then \
 		echo "$(RED)ERROR: Node.js is not installed. Please install Node.js first.$(RESET)"; \
@@ -54,8 +81,14 @@ test-debian: ## Run tests
 
 build-debian: ## Build the project
 	@echo "$(GREEN)Building project...$(RESET)"
-	@cd app && npm run build
-	@echo "$(GREEN)Build completed successfully!$(RESET)"
+	@cd app && (\
+		echo "$(BLUE)Building renderer and electron...$(RESET)" && \
+		npm run build:renderer && npm run build:electron && \
+		echo "$(BLUE)Building packages for Linux and Windows...$(RESET)" && \
+		npm run package:all || echo "$(YELLOW)Some package builds failed, check output above for details$(RESET)" \
+	)
+	@echo "$(GREEN)Build completed!$(RESET)"
+	@echo "$(BLUE)Check the release/ directory for built packages.$(RESET)"
 
 clean-debian: ## Clean up caches and build artifacts
 	@echo "$(RED)WARNING: This will remove all build artifacts and caches!$(RESET)"

@@ -21,6 +21,7 @@ export const VITE_DEV_SERVER_URL = process.env['VITE_DEV_SERVER_URL'];
 export const MAIN_DIST = path.join(process.env.APP_ROOT, 'dist-electron');
 export const RENDERER_DIST = path.join(process.env.APP_ROOT, 'dist');
 
+// In packaged app, public files might be in resources/public or bundled in app.asar
 process.env.VITE_PUBLIC = VITE_DEV_SERVER_URL
   ? path.join(process.env.APP_ROOT, 'public')
   : RENDERER_DIST;
@@ -29,12 +30,16 @@ let win: BrowserWindow | null;
 
 function createWindow() {
   // Create the browser window.
+  // Try to set icon if it exists, otherwise use default
+  const iconPath = path.join(process.env.VITE_PUBLIC, 'electron-vite.svg');
+  const iconExists = require('fs').existsSync(iconPath);
+
   win = new BrowserWindow({
     width: 1200,
     height: 800,
     minWidth: 800,
     minHeight: 600,
-    icon: path.join(process.env.VITE_PUBLIC, 'electron-vite.svg'),
+    ...(iconExists && { icon: iconPath }),
     webPreferences: {
       preload: path.join(__dirname, 'preload.mjs'),
       nodeIntegration: false,

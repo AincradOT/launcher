@@ -1,153 +1,110 @@
 // @see - https://www.electron.build/configuration/configuration
 {
-  "$schema": "https://raw.githubusercontent.com/electron-userland/electron-builder/master/packages/app-builder-lib/scheme.json",
-  
+  $schema: 'https://raw.githubusercontent.com/electron-userland/electron-builder/master/packages/app-builder-lib/scheme.json',
+
   // App Metadata
-  "appId": "com.aincradot.launcher",
-  "productName": "Aincrad Launcher",
-  "description": "A modern game launcher built with Electron and React",
-  "copyright": "Copyright © 2024 AincradOT",
-  "version": "1.0.0",
-  
+  appId: 'com.aincradot.launcher',
+  productName: 'Aincrad Launcher',
+  copyright: 'Copyright © 2024 AincradOT',
+
   // Build Configuration
-  "asar": true,
-  "compression": "maximum",
-  "removePackageScripts": true,
-  "removePackageKeywords": true,
-  
+  asar: true,
+  compression: 'maximum',
+  removePackageScripts: true,
+  removePackageKeywords: true,
+  // Add debugging and build options
+  buildDependenciesFromSource: false,
+  npmRebuild: false,
+
   // Output Configuration
-  "directories": {
-    "output": "release/${version}",
-    "buildResources": "build"
+  directories: {
+    output: 'release/${version}',
+    buildResources: 'build',
   },
-  
+
   // Files to Include/Exclude
-  "files": [
-    "dist/**/*",
-    "dist-electron/**/*",
-    "!**/*.map",
-    "!**/node_modules/*/{CHANGELOG.md,README.md,README,readme.md,readme}",
-    "!**/node_modules/*/{test,__tests__,tests,powered-test,example,examples}",
-    "!**/node_modules/*.d.ts",
-    "!**/node_modules/.bin",
-    "!**/*.{iml,o,hprof,orig,pyc,pyo,rbc,swp,csproj,sln,xproj}",
-    "!.editorconfig",
-    "!**/._*",
-    "!**/{.DS_Store,.git,.hg,.svn,CVS,RCS,SCCS,.gitignore,.gitattributes}",
-    "!**/{__pycache__,thumbs.db,.flowconfig,.idea,.vs,.nyc_output}",
-    "!**/{appveyor.yml,.travis.yml,circle.yml}",
-    "!**/{npm-debug.log,yarn.lock,.yarn-integrity,.yarn-metadata.json}"
+  files: [
+    'dist/**/*',
+    'dist-electron/**/*',
+    'public/**/*',
+    '!**/*.map',
+    '!**/node_modules/*/{CHANGELOG.md,README.md,README,readme.md,readme}',
+    '!**/node_modules/*/{test,__tests__,tests,powered-test,example,examples}',
+    '!**/node_modules/*.d.ts',
+    '!**/node_modules/.bin',
+    '!**/*.{iml,o,hprof,orig,pyc,pyo,rbc,swp,csproj,sln,xproj}',
+    '!.editorconfig',
+    '!**/._*',
+    '!**/{.DS_Store,.git,.hg,.svn,CVS,RCS,SCCS,.gitignore,.gitattributes}',
+    '!**/{__pycache__,thumbs.db,.flowconfig,.idea,.vs,.nyc_output}',
+    '!**/{appveyor.yml,.travis.yml,circle.yml}',
+    '!**/{npm-debug.log,yarn.lock,.yarn-integrity,.yarn-metadata.json}',
   ],
-  
+
   // Windows Configuration
-  "win": {
-    "target": [
+  win: {
+    target: [
       {
-        "target": "nsis",
-        "arch": ["x64", "ia32"]
+        target: 'nsis',
+        arch: ['x64'],
       },
       {
-        "target": "portable",
-        "arch": ["x64", "ia32"]
-      }
+        target: 'portable',
+        arch: ['x64'],
+      },
     ],
-    "artifactName": "${productName}-Windows-${version}-${arch}.${ext}",
-    "icon": "build/icon.ico",
-    "requestedExecutionLevel": "asInvoker"
+    artifactName: '${productName}-windows.${ext}',
+    // Comment out icon reference until ICO file is available
+    // icon: 'build/icon.ico',
+    requestedExecutionLevel: 'asInvoker',
+    // Disable code signing for cross-platform builds
+    sign: false,
+    // Disable Windows-specific metadata that requires Wine
+    signAndEditExecutable: false,
   },
-  
+
   // NSIS Installer Configuration
-  "nsis": {
-    "oneClick": false,
-    "perMachine": false,
-    "allowToChangeInstallationDirectory": true,
-    "deleteAppDataOnUninstall": false,
-    "createDesktopShortcut": true,
-    "createStartMenuShortcut": true,
-    "shortcutName": "Aincrad Launcher",
-    "installerIcon": "build/icon.ico",
-    "uninstallerIcon": "build/icon.ico",
-    "installerHeader": "build/installer-header.bmp",
-    "installerSidebar": "build/installer-sidebar.bmp",
-    "uninstallerSidebar": "build/installer-sidebar.bmp"
+  nsis: {
+    oneClick: false,
+    perMachine: false,
+    allowToChangeInstallationDirectory: true,
+    deleteAppDataOnUninstall: false,
+    createDesktopShortcut: true,
+    createStartMenuShortcut: true,
+    shortcutName: 'Aincrad Launcher',
+    // Comment out icon references until ICO files are available
+    // installerIcon: 'build/icon.ico',
+    // uninstallerIcon: 'build/icon.ico',
+    // Comment out optional resources that may not exist
+    // installerHeader: 'build/installer-header.bmp',
+    // installerSidebar: 'build/installer-sidebar.bmp',
+    // uninstallerSidebar: 'build/installer-sidebar.bmp',
   },
-  
-  // macOS Configuration
-  "mac": {
-    "target": [
-      {
-        "target": "dmg",
-        "arch": ["x64", "arm64"]
-      },
-      {
-        "target": "zip",
-        "arch": ["x64", "arm64"]
-      }
-    ],
-    "artifactName": "${productName}-Mac-${version}-${arch}.${ext}",
-    "icon": "build/icon.icns",
-    "category": "public.app-category.games",
-    "hardenedRuntime": true,
-    "gatekeeperAssess": false,
-    "entitlements": "build/entitlements.mac.plist",
-    "entitlementsInherit": "build/entitlements.mac.plist"
-  },
-  
+
   // Linux Configuration
-  "linux": {
-    "target": [
+  linux: {
+    target: [
       {
-        "target": "AppImage",
-        "arch": ["x64", "ia32", "armv7l", "arm64"]
+        target: 'AppImage',
+        arch: ['x64'],
       },
       {
-        "target": "deb",
-        "arch": ["x64", "ia32", "armv7l", "arm64"]
+        target: 'deb',
+        arch: ['x64'],
       },
-      {
-        "target": "rpm",
-        "arch": ["x64", "ia32", "armv7l", "arm64"]
-      }
     ],
-    "artifactName": "${productName}-Linux-${version}-${arch}.${ext}",
-    "icon": "build/icon.png",
-    "category": "Game"
+    artifactName: '${productName}-linux.${ext}',
+    icon: 'build/icon.png',
+    category: 'Game',
+    maintainer: 'AincradOT <contact@aincradot.com>',
   },
-  
-  // DMG Configuration
-  "dmg": {
-    "title": "Install ${productName}",
-    "icon": "build/icon.icns",
-    "background": "build/dmg-background.png",
-    "window": {
-      "width": 540,
-      "height": 380
-    },
-    "contents": [
-      {
-        "x": 130,
-        "y": 220
-      },
-      {
-        "x": 410,
-        "y": 220,
-        "type": "link",
-        "path": "/Applications"
-      }
-    ]
-  },
-  
-  // AppImage Configuration
-  "appImage": {
-    "artifactName": "${productName}-Linux-${version}-${arch}.AppImage"
-  },
-  
+
   // Publishing Configuration
-  "publish": {
-    "provider": "github",
-    "owner": "AincradOT",
-    "repo": "launcher",
-    "private": false,
-    "releaseType": "release"
-  }
+  publish: {
+    provider: 'github',
+    owner: 'AincradOT',
+    repo: 'launcher',
+    private: false,
+    releaseType: 'release',
+  },
 }
