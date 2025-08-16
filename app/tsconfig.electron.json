@@ -1,0 +1,33 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "composite": true,
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "noEmit": false,
+    "allowImportingTsExtensions": false,
+    "declaration": true,
+    "outDir": "dist-electron",
+    "rootDir": "electron",
+
+    // Node.js types
+    "types": ["node"],
+
+    // Electron-specific
+    "lib": ["ES2022"],
+
+    // Path mapping for Electron
+    "baseUrl": ".",
+    "paths": {
+      "@electron/*": ["electron/*"]
+    },
+
+    // Build info
+    "tsBuildInfoFile": "./node_modules/.cache/.cache/.tsbuildinfo.electron"
+  },
+  "include": ["electron/**/*"],
+  "exclude": ["src/**/*", "node_modules"]
+}

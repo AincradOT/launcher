@@ -26,4 +26,49 @@ export default defineConfig({
         : {},
     }),
   ],
+  
+  // Build configuration
+  build: {
+    outDir: 'dist',
+    sourcemap: true,
+    minify: 'esbuild',
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom'],
+          electron: ['electron']
+        }
+      }
+    }
+  },
+  
+  // Resolve configuration
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, 'src'),
+      '@electron': path.resolve(__dirname, 'electron'),
+      '@types': path.resolve(__dirname, 'types')
+    }
+  },
+  
+  // Environment variables
+  define: {
+    __APP_VERSION__: JSON.stringify(process.env.npm_package_version || '1.0.0'),
+    __APP_NAME__: JSON.stringify(process.env.npm_package_name || 'Aincrad Launcher'),
+    __BUILD_DATE__: JSON.stringify(new Date().toISOString())
+  },
+  
+  // Server configuration for development
+  server: {
+    port: 3000,
+    strictPort: true,
+    host: true
+  },
+  
+  // Preview configuration
+  preview: {
+    port: 4173,
+    strictPort: true,
+    host: true
+  }
 })
